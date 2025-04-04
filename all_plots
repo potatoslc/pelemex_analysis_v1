@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Mar 31 09:07:40 2025
+
+@author: u0890475
+"""
+
+from all_functions import*
+import math
+from blf import Sd_05prev
+
+gc_file_path = '/home/u0890475/Documents/Analysis_Codes_Matt/gc_time.csv'
+gc_df = get_gc_data(gc_file_path)
+timesteps = gc_df["Timestep"]
+gc = gc_df["g_isosrf"]
+
+"""
+fig = mono_plot(timesteps, gc,"timestep (s)","g_c","gc vs timesteps")
+plt.show()
+"""
+
+flame1 = build_flame(300, 101325, 0.375)
+sd,alpha = get_flame_info(flame1)
+dt = [ math.sqrt(alpha/x) for x in gc]
+dc = [Sd_05prev/x for x in gc]
+da_fb = [ (Sd_05prev**2)/(x*alpha) for x in gc]
+
+
+"""
+Plot the da_fb vs time
+"""
+plt1 = mono_plot(timesteps, da_fb,xlabel="timestep (s)",ylabel="Da_fb")
+plt1.show()
+
+
+
+"""
+Plot the Dc and Dt vs time
+"""
+plt2 = duo_plot_one_scale(timesteps, dc, timesteps, dt,["timesteps (s)","Dc","Dt"])
+plt2.show()
+
+
+"Plot the flame x position and Da_fb vs time"
+flame_loc = gc_df["x_minx_para"]
+from all_functions import*
+plt3 =duo_plot_duo_scale(timesteps, flame_loc, timesteps, da_fb,["timesteps (s)","flame x-position (m)","Da_FB"])
+plt3.show()
